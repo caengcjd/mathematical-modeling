@@ -257,7 +257,7 @@ def dijkstra(graph, src):
     for i in nodes:
         distance[i] = graph[src][i]  # 初始化
     # print(distance)
-    path = {src: {src: []}}  # 记录源节点到每个节点的路径
+    path = {src: {src: [0]}}  # 记录源节点到每个节点的路径
     k = pre = src
     while nodes:
         mid_distance = float('inf')
@@ -266,9 +266,9 @@ def dijkstra(graph, src):
                 new_distance = graph[src][v] + graph[v][d]
                 if new_distance < mid_distance:
                     mid_distance = new_distance
-                    graph[src][d] = new_distance  # 进行距离更新
                     k = d
                     pre = v
+        graph[src][k] = mid_distance  # 进行距离更新
         distance[k] = mid_distance  # 最短路径
         path[src][k] = [i for i in path[src][pre]]
         path[src][k].append(k)
