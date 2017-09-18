@@ -1,15 +1,17 @@
 # coding:utf-8
 import copy
+import json
+from NumToPlaceString import num2place
 
 
 def dijkstra(Graph):
-    path = {0: {0: [0]}}
-    distance = {0: {0: 0}}
-    for src in range(len(Graph)):
+    path = {}
+    distance = {}
+    for src in Graph.keys():
         graph = copy.deepcopy(Graph)
         path[src] = {src: [src]}  # 记录源节点到每个节点的路径
         distance[src] = {src: 0}  # 记录源节点到各个节点的距离
-        nodes = [i for i in range(len(graph))]  # 获取图中所有节点
+        nodes = [i for i in graph.keys()]  # 获取图中所有节点
         visited = []  # 表示已经路由到最短路径的节点集合
         if src in nodes:
             visited.append(src)
@@ -37,4 +39,7 @@ def dijkstra(Graph):
             visited.append(k)
             nodes.remove(k)
             # print(visited, nodes)  # 输出节点的添加过程
-    return distance, path
+    with open('./Path.txt', 'w') as f:
+        f.write(json.dumps(path))
+    with open('./Distance.txt', 'w') as f:
+        f.write(json.dumps(distance))
