@@ -275,7 +275,3 @@ def dijkstra(graph, src):
         nodes.remove(k)
         # print(visited, nodes)  # 输出节点的添加过程
     return distance, path
-
-d, p = dijkstra(RoadMatrix, 0)
-print p[D1][F57]
-
