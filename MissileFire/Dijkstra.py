@@ -39,7 +39,32 @@ def dijkstra(Graph):
             visited.append(k)
             nodes.remove(k)
             # print(visited, nodes)  # 输出节点的添加过程
+    return distance, path
+
+
+    def topk(t, k):  #top k algorithm
+        rs = {}  
+        ll = []  
+        for w, c in t: #遍历trie树  
+            if len(ll) == k:  
+                ll.append(c)  
+                rs.setdefault(c, [])  
+                rs[c].append(w)  
+                if len(ll) == k:  
+                    heapq.heapify(ll) #收集前k项，并且进行堆排序  
+            else:  
+                if c in ll:  
+                    rs[c].append(w)   
+                    continue   
+                pc = heapq.heappushpop(ll, c) #弹出频度最小的一项   
+                if pc in rs.keys():   
+                    rs.pop(pc) #从结果集中剔除被弹出的搜索项   
+                    rs.setdefault(c, [])   
+                    rs[c].append(w)   
+                    return rs  
+
     with open('./Path.txt', 'w') as f:
         f.write(json.dumps(path))
     with open('./Distance.txt', 'w') as f:
         f.write(json.dumps(distance))
+
