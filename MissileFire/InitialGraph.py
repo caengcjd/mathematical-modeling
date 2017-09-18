@@ -86,6 +86,8 @@ def G(p1, p2, ctype=1):
     Road[p2].length.append(length)
     Road[p1].connect_type.append(ctype)
     Road[p2].connect_type.append(ctype)
+    if ctype == 2:
+        length = length * 3 / 5
     RoadMatrix[p1][p2] = length
     RoadMatrix[p2][p1] = length
 
@@ -269,7 +271,7 @@ def initG():
 
 
 initG()
-# dijkstra(RoadMatrix)  # create path and distance json
+dijkstra(RoadMatrix)  # create path and distance json
 
 with open('./Path.txt', 'r') as f:
     json_path = f.read()
