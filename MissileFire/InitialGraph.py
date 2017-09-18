@@ -2,6 +2,8 @@
 
 import xlrd
 import math
+import json
+from Dijkstra import dijkstra
 
 
 class Place(object):
@@ -13,13 +15,22 @@ class Place(object):
         self.connect_type = []
 
 
+class Edge(object):
+    def __init__(self, length):
+        self.length = length
+        self.car = -1
+
+
 class Car(object):
-    def __init__(self, main_speed, normal_speed, type, start, target):
+    def __init__(self, main_speed, normal_speed, type, start_place, target_place):
         self.main_speed = main_speed
         self.normal_speed = normal_speed
         self.type = type
-        self.start = start
-        self.target = target
+        self.start_place = start_place
+        self.target_place = target_place
+        self.path = []
+        self.next_arrive_time = 0
+        self.next_arrive_place = start_place
 
 
 D1, D2 = range(0, 2)
@@ -58,7 +69,6 @@ def G(p1, p2, ctype=1):
     Road[p2].connect.append(p1)
     Road[p1].length.append(length)
     Road[p2].length.append(length)
-
     Road[p1].connect_type.append(ctype)
     Road[p2].connect_type.append(ctype)
     RoadMatrix[p1][p2] = length
@@ -69,12 +79,12 @@ G(D1, J11)
 G(D1, J10)
 G(D1, J09)
 G(D1, Z03)
-G(J11, J10, 0)
+G(J11, J10, 2)
 G(J11, J46)
 G(J46, F43)
 G(J46, J45)
 G(J46, J44)
-G(J10, J09, 0)
+G(J10, J09, 2)
 G(J45, J10)
 G(J45, J09)
 G(J45, J44)
@@ -85,7 +95,7 @@ G(J44, Z05)
 G(J44, J43)
 G(Z05, J41)
 G(J43, J19)
-G(J09, J08, 0)
+G(J09, J08, 2)
 G(J09, Z03)
 G(Z03, J52)
 G(Z03, J57)
@@ -136,13 +146,13 @@ G(J48, J47)
 G(J47, F45)
 G(J47, F44)
 G(J47, J02)
-G(J02, J01, 0)
-G(J02, J03, 0)
-G(J03, J04, 0)
-G(J04, J05, 0)
-G(J05, J06, 0)
-G(J06, J07, 0)
-G(J07, J08, 0)
+G(J02, J01, 2)
+G(J02, J03, 2)
+G(J03, J04, 2)
+G(J04, J05, 2)
+G(J05, J06, 2)
+G(J06, J07, 2)
+G(J07, J08, 2)
 G(J08, J42)
 G(J42, J38)
 G(J42, J40)
@@ -186,14 +196,14 @@ G(J32, J13)
 G(D2, J12)
 G(D2, J03)
 G(D2, J02)
-G(J12, J13, 0)
-G(J13, J14, 0)
-G(J14, J15, 0)
-G(J15, J16, 0)
-G(J16, J17, 0)
-G(J17, J18, 0)
-G(J18, J19, 0)
-G(J19, J20, 0)
+G(J12, J13, 2)
+G(J13, J14, 2)
+G(J14, J15, 2)
+G(J15, J16, 2)
+G(J16, J17, 2)
+G(J17, J18, 2)
+G(J18, J19, 2)
+G(J19, J20, 2)
 G(J20, J31)
 G(J31, J19)
 G(J31, F23)
@@ -242,43 +252,6 @@ G(J21, J13)
 G(J21, J14)
 
 
-def dijkstra(graph, src):
-    # 判断图是否为空，如果为空直接退出
-    if graph is None:
-        return None
-    nodes = [i for i in range(len(graph))]  # 获取图中所有节点
-    visited = []  # 表示已经路由到最短路径的节点集合
-    if src in nodes:
-        visited.append(src)
-        nodes.remove(src)
-    else:
-        return None
-    distance = {src: 0}  # 记录源节点到各个节点的距离
-    for i in nodes:
-        distance[i] = graph[src][i]  # 初始化
-    # print(distance)
-    path = {src: {src: [0]}}  # 记录源节点到每个节点的路径
-    k = pre = src
-    while nodes:
-        mid_distance = float('inf')
-        for v in visited:
-            for d in nodes:
-                new_distance = graph[src][v] + graph[v][d]
-                if new_distance < mid_distance:
-                    mid_distance = new_distance
-                    k = d
-                    pre = v
-        graph[src][k] = mid_distance  # 进行距离更新
-        distance[k] = mid_distance  # 最短路径
-        path[src][k] = [i for i in path[src][pre]]
-        path[src][k].append(k)
-        # 更新两个节点集合
-        visited.append(k)
-        nodes.remove(k)
-        # print(visited, nodes)  # 输出节点的添加过程
-    return distance, path
-
-
 def num2place(places):
     l = []
     for p in places:
@@ -295,5 +268,8 @@ def num2place(places):
     return l
 
 
-d, p = dijkstra(RoadMatrix, D1)
-print num2place(p[D1][J53])
+distance, path = dijkstra(RoadMatrix)
+with open('./Path.txt', 'w') as f:
+    f.write(json.dumps(path))
+with open('./Distance.txt', 'w') as f:
+    f.write(json.dumps(distance))
