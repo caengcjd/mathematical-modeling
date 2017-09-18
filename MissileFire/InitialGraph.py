@@ -52,11 +52,13 @@ for x in range(0, 130):
 
 
 def G(p1, p2, ctype=1):
-    length = math.sqrt(abs(Road[p1].x - Road[p2].x) * abs(Road[p1].y - Road[p2].y))
+    length = math.sqrt(
+        (Road[p1].x - Road[p2].x) * (Road[p1].x - Road[p2].x) + (Road[p1].y - Road[p2].y) * (Road[p1].y - Road[p2].y))
     Road[p1].connect.append(p2)
     Road[p2].connect.append(p1)
     Road[p1].length.append(length)
     Road[p2].length.append(length)
+
     Road[p1].connect_type.append(ctype)
     Road[p2].connect_type.append(ctype)
     RoadMatrix[p1][p2] = length
@@ -278,16 +280,20 @@ def dijkstra(graph, src):
 
 
 def num2place(places):
+    l = []
     for p in places:
         if p == 0:
-            return "D1"
+            l.append("D1")
         elif p == 1:
-            return "D2"
+            l.append("D2")
         elif 2 <= p < 8:
-            return "Z0%d" % (p - 1)
+            l.append("Z0%d" % (p - 1))
         elif 8 <= p < 68:
-            return "F%d" % (p - 7)
+            l.append("F%d" % (p - 7))
         elif 68 <= p < 130:
-            return "J%d" % (p - 67)
+            l.append("J%d" % (p - 67))
+    return l
 
 
+d, p = dijkstra(RoadMatrix, D1)
+print num2place(p[D1][J53])
