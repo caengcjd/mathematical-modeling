@@ -42,29 +42,33 @@ def dijkstra(Graph):
     return distance, path
 
 
-    def topk(t, k):  #top k algorithm
-        rs = {}  
-        ll = []  
-        for w, c in t: #遍历trie树  
-            if len(ll) == k:  
-                ll.append(c)  
-                rs.setdefault(c, [])  
-                rs[c].append(w)  
-                if len(ll) == k:  
-                    heapq.heapify(ll) #收集前k项，并且进行堆排序  
-            else:  
-                if c in ll:  
-                    rs[c].append(w)   
-                    continue   
-                pc = heapq.heappushpop(ll, c) #弹出频度最小的一项   
-                if pc in rs.keys():   
-                    rs.pop(pc) #从结果集中剔除被弹出的搜索项   
-                    rs.setdefault(c, [])   
-                    rs[c].append(w)   
-                    return rs  
+def qselect(A,k):  
+    if len(A)<k:return A  
+    pivot = A[-1]  
+    right = [pivot] + [x for x in A[:-1] if x>=pivot]  
+    rlen = len(right)  
+    if rlen==k:  
+        return right  
+    if rlen>k:  
+        return qselect(right, k)  
+    else:  
+        left = [x for x in A[:-1] if x<pivot]  
+        return qselect(left, k-rlen) + right  
 
-    with open('./Path.txt', 'w') as f:
-        f.write(json.dumps(path))
-    with open('./Distance.txt', 'w') as f:
-        f.write(json.dumps(distance))
 
+
+
+class TopKHeap(object):
+    def __init__(self, k):
+        self.k = k
+        self.data = []
+
+    def push(self, elem):
+        if len(self.data) < self.k:
+            heapq.heappush(self.data, elem)
+        else:
+            topk_small = self.data[0]
+            if elem > topk_small:
+                heapq.heapreplace(self.data, elem)
+    def topk(self):
+        return [x for x in reversed([heapq.heappop(self.data) for x in xrange(len(self.data))])]
