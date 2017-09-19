@@ -10,6 +10,7 @@ main_road_list = []
 graph = None
 edge  = None 
 to_f_1=[]
+to_f_11=[]
 to_z=[]
 to_f_2=[]
 used_f= [] 
@@ -43,7 +44,8 @@ def  path_time(point,type,prefix='D1'):
 	#prefix =  'D1'
 	#print  path[point]
 	i = 0 
-	to_f_1.append({	type:path[point]})
+	to_f_1.append({type:path[point]})
+	to_f_11.append({type:str(prefix)+str(point)})
 	for   points  in  path[point]:
 		i+=1
 		if(i==1):
@@ -61,6 +63,7 @@ def  path_time(point,type,prefix='D1'):
 def  new_path_time(start,end,type):
 	#global graph
 	#global edge
+	global path_z2f
 	path =read_path()
 	time = 1.0/6 # 
 	speed_fast=0
@@ -77,7 +80,7 @@ def  new_path_time(start,end,type):
 	i = 0 
 	#to_f_1.append({	type:path[point]})
 	prefix = start 
-	path_z2f.append({type:path[start][end]})
+	path_z2f.append({type:str(start)+str(end)})
 	#print start,end
 	for   points  in  path[start][end]:
 		i+=1
@@ -145,6 +148,7 @@ def    flood_from_z(start,type):
 	result= sorted(result.iteritems(), key=lambda d:d[1], reverse = False)
 	#print  result[0][1]
 	point = result[0][0]
+	#path_z2f.append({type:{start,point}})
 	used_f.append(point)
 	time = new_path_time(start,point,type)
 	return  time 
@@ -167,7 +171,7 @@ def    flood_to_z_to_f(start,type):
 	#paths= path[start][min_point]
 	time = new_path_time(start,min_point,type)
 	time += flood_from_z(min_point,type)
-	return time 
+	return time
 
 
 
@@ -197,6 +201,10 @@ def  read_edge():
 	     file_object.close( )
 
 
+
+
+
+
 if __name__ == '__main__':
 	#print  read_path()
 	#start_time = time.time()
@@ -211,9 +219,7 @@ if __name__ == '__main__':
 	graph = distance["D1"]
 	dict= sorted(graph.iteritems(), key=lambda d:d[1], reverse = False)
 	max_time= flood_all_cars(dict)
-	print max_time
 
-	#D2 type 
 	path=read_path()["D2"]
 	graph = distance["D2"]
 	dict= sorted(graph.iteritems(), key=lambda d:d[1], reverse = False)
@@ -221,16 +227,18 @@ if __name__ == '__main__':
 	d2_max_time= flood_all_cars(dict,"D2")
 	#print d2_max_time
 	last_endpoint =[]
-	print to_f_1,len(to_f_1) 
+	print to_f_11,len(to_f_11)
+	
+
 	for   car_path    in   to_f_1:
 		for car,path  in car_path.items():
 			last_endpoint.append({car:path})
-			alltime = flood_to_z_to_f(path[-1],car)
+			alltime= flood_to_z_to_f(path[-1],car)
 			print car,path[-1],alltime
 
-
-
-
+	print path_z2f
+	#global path_z2f
+              #print path_z2f
 	#calculate the time of all delay
 
 
